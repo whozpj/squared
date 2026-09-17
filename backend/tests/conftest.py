@@ -13,9 +13,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.core.config import get_settings
 from app.core.db import get_db
 from app.main import app
 from app.models import Base
+
+# Don't spin up the APScheduler background thread during tests.
+get_settings().enable_reminders = False
 from app.services.ocr import storage
 from app.services.ws_manager import manager
 from app.workers import ocr_runner

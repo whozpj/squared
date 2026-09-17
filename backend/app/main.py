@@ -7,6 +7,8 @@ routes (groups, bills, auth, …) are layered on in later build steps per DESIGN
 
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,6 +17,7 @@ from app.api.routes_bills import router as bills_router
 from app.api.routes_compute import router as compute_router
 from app.api.routes_groups import invites_router
 from app.api.routes_groups import router as groups_router
+from app.api.routes_notifications import router as notifications_router
 from app.api.routes_ocr import router as ocr_router
 from app.api.routes_payments import router as payments_router
 from app.api.routes_ws import router as ws_router
@@ -22,7 +25,22 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
-app = FastAPI(title=settings.app_name)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    scheduler = None
+    if get_settings().enable_reminders:
+        from app.workers.scheduler import start_scheduler
+
+        scheduler = start_scheduler()
+    try:
+        yield
+    finally:
+        if scheduler is not None:
+            scheduler.shutdown(wait=False)
+
+
+app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,4 +63,5 @@ app.include_router(invites_router)
 app.include_router(bills_router)
 app.include_router(payments_router)
 app.include_router(ocr_router)
+app.include_router(notifications_router)
 app.include_router(ws_router)

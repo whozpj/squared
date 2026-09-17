@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
     ocr_max_workers: int = 2
 
+    # Reminders scheduler (single-process; see DESIGN §8).
+    enable_reminders: bool = True
+    reminder_interval_hours: int = 24
+
 
 @lru_cache
 def get_settings() -> Settings:

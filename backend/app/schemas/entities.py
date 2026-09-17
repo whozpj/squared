@@ -96,6 +96,14 @@ class BillOut(BaseModel):
     shares: list[ShareOut]
 
 
+# --- notifications ---
+class NotificationOut(BaseModel):
+    id: int
+    type: str
+    payload: dict | None
+    read: bool
+
+
 # --- ocr ---
 class OcrJobOut(BaseModel):
     id: int
