@@ -5,11 +5,15 @@ from app.models.models import (
     Group,
     GroupInvite,
     GroupMember,
-    LineItem,
+    InviteStatus,
     ItemShare,
+    LineItem,
+    MemberRole,
     Notification,
     OcrJob,
+    OcrStatus,
     Payment,
+    PaymentStatus,
     User,
 )
 
@@ -26,4 +30,8 @@ __all__ = [
     "OcrJob",
     "Payment",
     "Notification",
+    "MemberRole",
+    "InviteStatus",
+    "OcrStatus",
+    "PaymentStatus",
 ]

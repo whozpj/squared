@@ -10,7 +10,11 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes_auth import router as auth_router
+from app.api.routes_bills import router as bills_router
 from app.api.routes_compute import router as compute_router
+from app.api.routes_groups import invites_router
+from app.api.routes_groups import router as groups_router
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -32,3 +36,7 @@ def health() -> dict[str, str]:
 
 
 app.include_router(compute_router)
+app.include_router(auth_router)
+app.include_router(groups_router)
+app.include_router(invites_router)
+app.include_router(bills_router)

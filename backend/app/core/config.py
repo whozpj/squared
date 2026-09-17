@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     environment: str = "development"
 
     # Postgres. Overridden in prod; docker-compose provides a local default.
-    database_url: str = "postgresql+psycopg://squared:squared@localhost:5432/squared"
+    database_url: str = "postgresql+psycopg://squared:squared@localhost:5434/squared"
 
     # Auth (filled in during the auth build step; safe placeholders for now).
     jwt_secret: str = "dev-insecure-change-me"
