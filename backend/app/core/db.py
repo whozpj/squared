@@ -25,6 +25,11 @@ def _init() -> sessionmaker[Session]:
     return _SessionLocal
 
 
+def get_sessionmaker() -> sessionmaker[Session]:
+    """Session factory bound to the app engine (used by background workers)."""
+    return _init()
+
+
 def get_db() -> Iterator[Session]:
     session = _init()()
     try:

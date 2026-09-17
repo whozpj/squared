@@ -34,9 +34,18 @@ class ConnectionManager:
     def broadcast(self, group_id: int, message: dict[str, Any]) -> None:
         """Thread-safe: safe to call from sync request handlers."""
         loop = self._loop
-        if loop is None:
+        if loop is None or loop.is_closed():
             return
-        loop.call_soon_threadsafe(self._fanout, group_id, dict(message))
+        try:
+            loop.call_soon_threadsafe(self._fanout, group_id, dict(message))
+        except RuntimeError:
+            # Loop shut down between the check and the call; nothing to deliver.
+            pass
+
+    def reset(self) -> None:
+        self._by_group.clear()
+        self._groups_of.clear()
+        self._loop = None
 
     def _fanout(self, group_id: int, message: dict[str, Any]) -> None:
         for ws in list(self._by_group.get(group_id, ())):

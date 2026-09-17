@@ -26,6 +26,10 @@ frontend/vite.config.d.ts
 .env.*
 !.env.example
 
+# Uploaded receipt images (local dev storage)
+uploads/
+backend/uploads/
+
 # OS / editor
 .DS_Store
 .idea/

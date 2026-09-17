@@ -96,6 +96,25 @@ class BillOut(BaseModel):
     shares: list[ShareOut]
 
 
+# --- ocr ---
+class OcrJobOut(BaseModel):
+    id: int
+    bill_id: int
+    status: str
+    confidence: int | None = None
+    error: str | None = None
+    parsed: dict | None = None  # {items, subtotal, tax, tip, total, reconciled, issues}
+
+
+class BillItemsReplace(BaseModel):
+    """Replace a bill's line items (e.g. after reviewing OCR output)."""
+
+    tax: int = 0
+    tip: int = 0
+    items: list[ItemIn]
+    version: int | None = None  # optimistic concurrency guard
+
+
 # --- payments ---
 class PaymentCreate(BaseModel):
     to_user: int

@@ -5,6 +5,8 @@ Lets the full MVP flow be tested end-to-end without Docker or Postgres.
 
 from __future__ import annotations
 
+import tempfile
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -14,10 +16,13 @@ from sqlalchemy.pool import StaticPool
 from app.core.db import get_db
 from app.main import app
 from app.models import Base
+from app.services.ocr import storage
+from app.services.ws_manager import manager
+from app.workers import ocr_runner
 
 
 @pytest.fixture
-def client():
+def client(tmp_path):
     engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
@@ -34,9 +39,21 @@ def client():
             db.close()
 
     app.dependency_overrides[get_db] = override_get_db
+
+    # OCR runs inline against the test DB; images land in a temp dir.
+    ocr_runner.run_inline = True
+    ocr_runner.session_factory = TestingSession
+    storage.UPLOAD_DIR = str(tempfile.mkdtemp(dir=tmp_path))
+
     with TestClient(app) as c:
         yield c
+
     app.dependency_overrides.clear()
+    ocr_runner.run_inline = False
+    ocr_runner.session_factory = None
+    ocr_runner.provider = None
+    storage.UPLOAD_DIR = None
+    manager.reset()
 
 
 def login(client, email: str, name: str) -> tuple[str, int]:
