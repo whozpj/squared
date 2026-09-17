@@ -96,6 +96,22 @@ class BillOut(BaseModel):
     shares: list[ShareOut]
 
 
+# --- payments ---
+class PaymentCreate(BaseModel):
+    to_user: int
+    amount: int = Field(gt=0)
+    method: str | None = None
+
+
+class PaymentOut(BaseModel):
+    id: int
+    from_user: int
+    to_user: int
+    amount: int
+    method: str | None
+    status: str
+
+
 # --- balances ---
 class TransferOut(BaseModel):
     debtor: int

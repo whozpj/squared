@@ -12,6 +12,7 @@ from app.models import Bill, BillShare, Group, GroupMember, ItemShare, LineItem,
 from app.schemas.entities import BillCreate, BillOut, LineItemOut, ShareOut
 from app.services.allocation import AllocationError
 from app.services.bills import recompute_bill_shares
+from app.services.ws_manager import balances_updated, manager
 
 router = APIRouter(tags=["bills"])
 
@@ -98,6 +99,7 @@ def create_bill(
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     db.commit()
     db.refresh(bill)
+    manager.broadcast(group_id, balances_updated(group_id))
     return _serialize_bill(db, bill)
 
 

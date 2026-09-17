@@ -15,6 +15,8 @@ from app.api.routes_bills import router as bills_router
 from app.api.routes_compute import router as compute_router
 from app.api.routes_groups import invites_router
 from app.api.routes_groups import router as groups_router
+from app.api.routes_payments import router as payments_router
+from app.api.routes_ws import router as ws_router
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -40,3 +42,5 @@ app.include_router(auth_router)
 app.include_router(groups_router)
 app.include_router(invites_router)
 app.include_router(bills_router)
+app.include_router(payments_router)
+app.include_router(ws_router)
