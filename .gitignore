@@ -34,3 +34,9 @@ backend/uploads/
 .DS_Store
 .idea/
 .vscode/
+
+# iOS build output + generated Xcode project (regenerate with `xcodegen generate`)
+ios/build/
+ios/Squared.xcodeproj/
+ios/DerivedData/
+*.xcuserstate

@@ -26,6 +26,7 @@ down to the **fewest possible payments** and keeps balances in sync in real time
 ```
 backend/    FastAPI app, models, services (allocation, settlement, ocr), tests
 frontend/   React + TypeScript client
+ios/        Native SwiftUI app (talks to the same backend)
 docker-compose.yml   local Postgres
 ```
 
@@ -67,6 +68,20 @@ cd frontend
 npm install
 npm run dev        # http://localhost:5173  (proxies /compute to the backend)
 ```
+
+### iOS app (SwiftUI)
+
+The `ios/` folder is a native SwiftUI app that hits the same backend. The Xcode
+project is generated with [XcodeGen](https://github.com/yonaskolb/XcodeGen):
+
+```bash
+cd ios
+xcodegen generate      # creates Squared.xcodeproj from project.yml
+open Squared.xcodeproj  # then run on an iPhone simulator (⌘R)
+```
+
+It expects the backend at `http://localhost:8001` (see `API.swift`). Local HTTP is
+allowed via `NSAllowsLocalNetworking` in `Info.plist`.
 
 ## Status
 
