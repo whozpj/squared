@@ -74,6 +74,19 @@ def test_requires_auth(client):
     assert client.get("/groups").status_code == 401
 
 
+def test_list_bills(client):
+    alice_tok, alice = login(client, "alice@example.com", "Alice")
+    gid = client.post("/groups", json={"name": "G"}, headers=auth(alice_tok)).json()["id"]
+    client.post(
+        f"/groups/{gid}/bills",
+        json={"title": "Lunch", "payer_id": alice, "items": [{"name": "x", "price": 500, "shares": {alice: 1}}]},
+        headers=auth(alice_tok),
+    )
+    bills = client.get(f"/groups/{gid}/bills", headers=auth(alice_tok)).json()
+    assert len(bills) == 1
+    assert bills[0]["title"] == "Lunch"
+
+
 def test_reduction_metric_on_chain(client):
     # A pays for B and C; separately B pays a bill for C. Simplify should net these.
     a_tok, a = login(client, "a@x.com", "A")

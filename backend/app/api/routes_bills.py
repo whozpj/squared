@@ -103,6 +103,19 @@ def create_bill(
     return _serialize_bill(db, bill)
 
 
+@router.get("/groups/{group_id}/bills", response_model=list[BillOut])
+def list_bills(
+    group_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)
+) -> list[BillOut]:
+    require_member(db, group_id, user.id)
+    bills = db.scalars(
+        select(Bill)
+        .where(Bill.group_id == group_id, Bill.deleted_at.is_(None))
+        .order_by(Bill.id.desc())
+    ).all()
+    return [_serialize_bill(db, b) for b in bills]
+
+
 @router.get("/bills/{bill_id}", response_model=BillOut)
 def get_bill(
     bill_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)
