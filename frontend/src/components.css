@@ -348,3 +348,50 @@
 .link:hover {
   color: var(--ink);
 }
+
+/* Settle-up transfer row: wrap the amount/actions below on narrow screens. */
+.transfer-row {
+  gap: var(--sp-2);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 26px;
+  }
+  h2 {
+    font-size: 20px;
+  }
+  .page {
+    padding: var(--sp-5) 0 var(--sp-6);
+  }
+  .card {
+    padding: var(--sp-4);
+  }
+  .topbar-inner {
+    padding: var(--sp-3);
+  }
+  /* Let label/value and header/badge rows stack instead of overflowing. */
+  .card .row.between {
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+  .page-head .between {
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+  .panel {
+    width: min(320px, calc(100vw - 24px));
+  }
+}
+
+@media (max-width: 560px) {
+  .transfer-row {
+    flex-wrap: wrap;
+  }
+  /* amount + actions drop to their own full-width line, right-aligned */
+  .transfer-row > .row:last-child {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

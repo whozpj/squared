@@ -155,7 +155,7 @@ export default function GroupDetail() {
                 2,
               )}&note=${encodeURIComponent((group?.name ?? "Squared") + " settle up")}`;
               return (
-                <div key={i} className="row between" style={{ padding: "8px 0" }}>
+                <div key={i} className="row between transfer-row" style={{ padding: "8px 0" }}>
                   <div className="row">
                     <Avatar name={nameOf(t.debtor)} />
                     <Icon name="arrow" size={16} />
