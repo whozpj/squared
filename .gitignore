@@ -30,6 +30,9 @@ frontend/vite.config.d.ts
 uploads/
 backend/uploads/
 
+# Generated OCR benchmark corpus (regenerate with scripts/gen_ocr_corpus.py)
+backend/ocr_corpus/
+
 # OS / editor
 .DS_Store
 .idea/
