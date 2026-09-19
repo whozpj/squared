@@ -35,6 +35,9 @@ backend/uploads/
 .idea/
 .vscode/
 
+# Playwright test artifacts
+.playwright-mcp/
+
 # iOS build output + generated Xcode project (regenerate with `xcodegen generate`)
 ios/build/
 ios/Squared.xcodeproj/
