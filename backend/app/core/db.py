@@ -20,7 +20,9 @@ _SessionLocal: sessionmaker[Session] | None = None
 def _init() -> sessionmaker[Session]:
     global _engine, _SessionLocal
     if _SessionLocal is None:
-        _engine = create_engine(get_settings().database_url, pool_pre_ping=True, future=True)
+        _engine = create_engine(
+            get_settings().normalized_database_url(), pool_pre_ping=True, future=True
+        )
         _SessionLocal = sessionmaker(bind=_engine, autoflush=False, expire_on_commit=False)
     return _SessionLocal
 

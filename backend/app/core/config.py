@@ -35,6 +35,16 @@ class Settings(BaseSettings):
     reminder_interval_hours: int = 24
 
 
+    def normalized_database_url(self) -> str:
+        """Ensure the psycopg driver is used (Neon/Render give a bare postgresql:// URL)."""
+        url = self.database_url
+        if url.startswith("postgres://"):
+            return "postgresql+psycopg://" + url[len("postgres://"):]
+        if url.startswith("postgresql://"):
+            return "postgresql+psycopg://" + url[len("postgresql://"):]
+        return url
+
+
 @lru_cache
 def get_settings() -> Settings:
     return Settings()

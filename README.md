@@ -87,6 +87,21 @@ open Squared.xcodeproj  # then run on an iPhone simulator (⌘R)
 It expects the backend at `http://localhost:8001` (see `API.swift`). Local HTTP is
 allowed via `NSAllowsLocalNetworking` in `Info.plist`.
 
+## Deploy (free tier)
+
+Three free services: **Neon** (Postgres), **Render** (backend), **Netlify** (frontend).
+
+1. **Database** — create a free Neon project, copy its connection string.
+2. **Backend** — on Render, "New → Blueprint" against this repo (uses `render.yaml`).
+   Set `DATABASE_URL` to the Neon string and `CORS_ORIGINS` to `["https://<your-site>.netlify.app"]`.
+   The Docker image bundles Tesseract; migrations run on boot.
+3. **Frontend** — on Netlify, point at this repo (uses `frontend/netlify.toml`). Set
+   `VITE_API_BASE` to the Render backend URL (e.g. `https://squared-api.onrender.com`), then deploy.
+
+The frontend talks to the backend via `VITE_API_BASE` (REST + WebSocket), so there's no
+path collision and deep links work. The live demo uses the dev sign-in until Google OAuth lands.
+(Free tiers sleep when idle — the first request after a nap takes a few seconds.)
+
 ## Status
 
 Early build. The core money logic — exact tax/tip allocation and greedy debt

@@ -1,5 +1,9 @@
 // Typed client for the Squared backend. Token is held in memory + localStorage.
 
+// In dev this is empty (Vite proxies /auth, /groups, … to the backend). In prod set
+// VITE_API_BASE to the deployed backend origin, e.g. https://squared-api.onrender.com
+export const API_BASE = (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
+
 let token: string | null = null;
 try {
   token = localStorage.getItem("squared_token");
@@ -25,7 +29,7 @@ async function req<T>(method: string, path: string, body?: unknown): Promise<T> 
   const headers: Record<string, string> = {};
   if (body !== undefined) headers["Content-Type"] = "application/json";
   if (token) headers["Authorization"] = `Bearer ${token}`;
-  const res = await fetch(path, {
+  const res = await fetch(`${API_BASE}${path}`, {
     method,
     headers,
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -180,7 +184,7 @@ export const api = {
     fd.append("file", file);
     const headers: Record<string, string> = {};
     if (token) headers["Authorization"] = `Bearer ${token}`;
-    const res = await fetch(`/bills/${billId}/ocr`, { method: "POST", headers, body: fd });
+    const res = await fetch(`${API_BASE}/bills/${billId}/ocr`, { method: "POST", headers, body: fd });
     if (!res.ok) throw new ApiError(res.status, await res.text());
     return (await res.json()) as OcrJob;
   },

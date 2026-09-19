@@ -8,11 +8,19 @@ export interface GroupSocket {
   close(): void;
 }
 
+function defaultWsUrl(): string {
+  // Dev: same-origin, proxied by Vite. Prod: derive from VITE_API_BASE.
+  const base = (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
+  if (base) return base.replace(/^http/, "ws") + "/ws";
+  const proto = location.protocol === "https:" ? "wss" : "ws";
+  return `${proto}://${location.host}/ws`;
+}
+
 export function connectGroup(
   token: string,
   groupId: number,
   onEvent: (e: SquaredEvent) => void,
-  wsUrl = `ws://${location.host}/ws`,
+  wsUrl = defaultWsUrl(),
 ): GroupSocket {
   let ws: WebSocket | null = null;
   let closed = false;
