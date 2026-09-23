@@ -62,6 +62,15 @@ export interface User {
   id: number;
   email: string;
   name: string;
+  venmo_handle?: string | null;
+  paypal_handle?: string | null;
+  cashapp_cashtag?: string | null;
+}
+export interface ProfileUpdate {
+  name?: string;
+  venmo_handle?: string;
+  paypal_handle?: string;
+  cashapp_cashtag?: string;
 }
 export interface Group {
   id: number;
@@ -74,6 +83,9 @@ export interface Member {
   name: string;
   email: string;
   role: string;
+  venmo_handle?: string | null;
+  paypal_handle?: string | null;
+  cashapp_cashtag?: string | null;
 }
 export interface ShareOut {
   user_id: number;
@@ -153,6 +165,7 @@ export const api = {
   devLogin: (email: string, name: string) =>
     req<{ access_token: string; user_id: number }>("POST", "/auth/dev-login", { email, name }),
   me: () => req<User>("GET", "/auth/me"),
+  updateProfile: (payload: ProfileUpdate) => req<User>("PATCH", "/auth/me", payload),
 
   groups: () => req<Group[]>("GET", "/groups"),
   createGroup: (name: string, currency = "USD") =>
@@ -174,6 +187,11 @@ export const api = {
   claimPayment: (gid: number, to_user: number, amount: number, method?: string) =>
     req<Payment>("POST", `/groups/${gid}/payments`, { to_user, amount, method }),
   confirmPayment: (id: number) => req<Payment>("POST", `/payments/${id}/confirm`),
+  remind: (gid: number, to_user: number, amount: number) =>
+    req<{ emailed: boolean; notified: boolean }>("POST", `/groups/${gid}/settle/remind`, {
+      to_user,
+      amount,
+    }),
 
   notifications: () => req<Notification[]>("GET", "/notifications"),
   markRead: (id: number) => req<Notification>("POST", `/notifications/${id}/read`),

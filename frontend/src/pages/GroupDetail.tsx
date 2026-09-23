@@ -43,6 +43,10 @@ export default function GroupDetail() {
     (id: number) => members.find((m) => m.user_id === id)?.name ?? `User ${id}`,
     [members],
   );
+  const memberOf = useCallback(
+    (id: number) => members.find((m) => m.user_id === id),
+    [members],
+  );
 
   const refresh = useCallback(() => {
     api.groups().then((gs) => setGroup(gs.find((g) => g.id === groupId) ?? null));
@@ -149,39 +153,38 @@ export default function GroupDetail() {
           <EmptyState title="Everyone's settled up" hint="No payments needed right now." />
         ) : (
           <div className="stack-2">
-            {balances.transfers.map((t, i) => {
-              const mine = t.debtor === user!.id;
-              const venmo = `https://venmo.com/?txn=pay&amount=${(t.amount / 100).toFixed(
-                2,
-              )}&note=${encodeURIComponent((group?.name ?? "Squared") + " settle up")}`;
-              return (
-                <div key={i} className="row between transfer-row" style={{ padding: "8px 0" }}>
-                  <div className="row">
-                    <Avatar name={nameOf(t.debtor)} />
-                    <Icon name="arrow" size={16} />
-                    <Avatar name={nameOf(t.creditor)} />
-                    <span className="small muted">
-                      {mine ? "You" : nameOf(t.debtor)} → {nameOf(t.creditor)}
-                    </span>
-                  </div>
-                  <div className="row">
-                    <span className="num" style={{ fontWeight: 600 }}>
-                      {money(t.amount)}
-                    </span>
-                    {mine && (
-                      <>
-                        <a className="btn btn-ghost btn-sm" href={venmo} target="_blank" rel="noreferrer">
-                          Venmo
-                        </a>
-                        <Button size="sm" variant="secondary" onClick={() => markPaid(t.creditor, t.amount)}>
-                          I paid
-                        </Button>
-                      </>
-                    )}
-                  </div>
+            {balances.transfers.map((t, i) => (
+              <div key={i} className="row between transfer-row" style={{ padding: "8px 0" }}>
+                <div className="row">
+                  <Avatar name={nameOf(t.debtor)} />
+                  <Icon name="arrow" size={16} />
+                  <Avatar name={nameOf(t.creditor)} />
+                  <span className="small muted">
+                    {t.debtor === user!.id ? "You" : nameOf(t.debtor)} → {nameOf(t.creditor)}
+                  </span>
                 </div>
-              );
-            })}
+                <div className="row" style={{ flexWrap: "wrap", justifyContent: "flex-end" }}>
+                  <span className="num" style={{ fontWeight: 600 }}>
+                    {money(t.amount)}
+                  </span>
+                  {t.debtor === user!.id && (
+                    <PayLinks
+                      creditor={memberOf(t.creditor)}
+                      amount={t.amount}
+                      groupName={group?.name ?? "Squared"}
+                    />
+                  )}
+                  {t.debtor === user!.id && (
+                    <Button size="sm" variant="secondary" onClick={() => markPaid(t.creditor, t.amount)}>
+                      I paid
+                    </Button>
+                  )}
+                  {t.creditor === user!.id && (
+                    <RemindButton groupId={groupId} debtor={t.debtor} amount={t.amount} />
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -251,6 +254,75 @@ export default function GroupDetail() {
       )}
       {showInvite && <InviteModal groupId={groupId} onClose={() => setShowInvite(false)} />}
     </>
+  );
+}
+
+function PayLinks({
+  creditor,
+  amount,
+  groupName,
+}: {
+  creditor?: Member;
+  amount: number;
+  groupName: string;
+}) {
+  const amt = (amount / 100).toFixed(2);
+  const note = encodeURIComponent(`${groupName} settle up`);
+  const links: { label: string; href: string }[] = [
+    {
+      label: "Venmo",
+      href: creditor?.venmo_handle
+        ? `https://venmo.com/${creditor.venmo_handle}?txn=pay&amount=${amt}&note=${note}`
+        : `https://venmo.com/?txn=pay&amount=${amt}&note=${note}`,
+    },
+  ];
+  if (creditor?.paypal_handle)
+    links.push({ label: "PayPal", href: `https://paypal.me/${creditor.paypal_handle}/${amt}` });
+  if (creditor?.cashapp_cashtag)
+    links.push({ label: "Cash App", href: `https://cash.app/$${creditor.cashapp_cashtag}/${amt}` });
+  if (creditor?.email)
+    links.push({
+      label: "Email",
+      href: `mailto:${creditor.email}?subject=${encodeURIComponent(
+        `Settling up: ${groupName}`,
+      )}&body=${encodeURIComponent(
+        `Hi ${creditor.name}, sending you $${amt} for ${groupName} on Squared.`,
+      )}`,
+    });
+  return (
+    <>
+      {links.map((l) => (
+        <a key={l.label} className="btn btn-ghost btn-sm" href={l.href} target="_blank" rel="noreferrer">
+          {l.label}
+        </a>
+      ))}
+    </>
+  );
+}
+
+function RemindButton({
+  groupId,
+  debtor,
+  amount,
+}: {
+  groupId: number;
+  debtor: number;
+  amount: number;
+}) {
+  const [state, setState] = useState<"idle" | "busy" | "done">("idle");
+  const send = async () => {
+    setState("busy");
+    try {
+      await api.remind(groupId, debtor, amount);
+      setState("done");
+    } catch {
+      setState("idle");
+    }
+  };
+  return (
+    <Button size="sm" variant="secondary" onClick={send} disabled={state !== "idle"}>
+      {state === "done" ? "Reminded ✓" : state === "busy" ? "…" : "Remind"}
+    </Button>
   );
 }
 

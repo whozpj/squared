@@ -70,7 +70,16 @@ def list_members(
         .where(GroupMember.group_id == group_id)
     ).all()
     return [
-        MemberOut(user_id=u.id, name=u.name, email=u.email, role=m.role.value) for m, u in rows
+        MemberOut(
+            user_id=u.id,
+            name=u.name,
+            email=u.email,
+            role=m.role.value,
+            venmo_handle=u.venmo_handle,
+            paypal_handle=u.paypal_handle,
+            cashapp_cashtag=u.cashapp_cashtag,
+        )
+        for m, u in rows
     ]
 
 

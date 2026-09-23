@@ -53,6 +53,10 @@ class User(Base, TimestampMixin):
     email: Mapped[str] = mapped_column(String(320), index=True)
     name: Mapped[str] = mapped_column(String(255))
     avatar_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    # Optional payment handles, used to build precise settle-up deep links.
+    venmo_handle: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    paypal_handle: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    cashapp_cashtag: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
 
 class Group(Base, TimestampMixin):

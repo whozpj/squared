@@ -2,7 +2,68 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, money, type Notification } from "../lib/api";
 import { useAuth } from "../lib/auth";
-import { Avatar, Icon } from "./ui";
+import { Avatar, Button, Field, Icon, Input, Modal } from "./ui";
+
+function ProfileSheet({ onClose }: { onClose: () => void }) {
+  const { user, updateProfile, logout } = useAuth();
+  const nav = useNavigate();
+  const [name, setName] = useState(user?.name ?? "");
+  const [venmo, setVenmo] = useState(user?.venmo_handle ?? "");
+  const [paypal, setPaypal] = useState(user?.paypal_handle ?? "");
+  const [cashapp, setCashapp] = useState(user?.cashapp_cashtag ?? "");
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const save = async () => {
+    setBusy(true);
+    setSaved(false);
+    try {
+      await updateProfile({
+        name,
+        venmo_handle: venmo,
+        paypal_handle: paypal,
+        cashapp_cashtag: cashapp,
+      });
+      setSaved(true);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Modal title="Your profile" onClose={onClose}>
+      <Field label="Name">
+        <Input value={name} onChange={(e) => setName(e.target.value)} />
+      </Field>
+      <p className="small muted" style={{ margin: "4px 0 12px" }}>
+        Add your payment handles so friends can pay you in one tap.
+      </p>
+      <Field label="Venmo username">
+        <Input value={venmo} onChange={(e) => setVenmo(e.target.value)} placeholder="e.g. jane-doe" />
+      </Field>
+      <Field label="PayPal.me username">
+        <Input value={paypal} onChange={(e) => setPaypal(e.target.value)} placeholder="e.g. janedoe" />
+      </Field>
+      <Field label="Cash App $cashtag">
+        <Input value={cashapp} onChange={(e) => setCashapp(e.target.value)} placeholder="e.g. janedoe" />
+      </Field>
+      <Button variant="primary" block onClick={save} loading={busy}>
+        {saved ? "Saved ✓" : "Save"}
+      </Button>
+      <div className="divider" />
+      <Button
+        variant="danger"
+        block
+        onClick={() => {
+          logout();
+          nav("/login");
+        }}
+      >
+        Sign out
+      </Button>
+    </Modal>
+  );
+}
 
 function NotificationBell() {
   const [open, setOpen] = useState(false);
@@ -73,8 +134,8 @@ function NotificationBell() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user, logout } = useAuth();
-  const nav = useNavigate();
+  const { user } = useAuth();
+  const [showProfile, setShowProfile] = useState(false);
   return (
     <>
       <header className="topbar">
@@ -89,12 +150,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               <NotificationBell />
               <button
                 className="icon-btn"
-                title={`${user.name} — sign out`}
-                aria-label="Sign out"
-                onClick={() => {
-                  logout();
-                  nav("/login");
-                }}
+                title={`${user.name} — profile`}
+                aria-label="Profile"
+                onClick={() => setShowProfile(true)}
                 style={{ width: "auto", padding: "0 8px", gap: 8 }}
               >
                 <Avatar name={user.name} />
@@ -104,6 +162,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="container page">{children}</main>
+      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} />}
     </>
   );
 }

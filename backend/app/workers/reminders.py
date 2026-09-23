@@ -19,8 +19,9 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.models import Group, Notification
+from app.models import Group, Notification, User
 from app.services.balances import compute_balances
+from app.services.email import send_email, settle_reminder_html
 from app.services.ws_manager import manager
 
 
@@ -65,6 +66,13 @@ def run_reminders(db: Session, now: datetime | None = None) -> int:
             manager.broadcast(
                 group.id, {"type": "notification.new", "group_id": group.id, "user_id": debtor}
             )
+            debtor_user = db.get(User, debtor)
+            if debtor_user is not None:
+                send_email(
+                    debtor_user.email,
+                    f"You have ${owed / 100:.2f} to settle on Squared",
+                    settle_reminder_html(group.name, owed, group.name),
+                )
 
     db.commit()
     return created

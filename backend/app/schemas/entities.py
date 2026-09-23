@@ -21,6 +21,16 @@ class UserOut(BaseModel):
     id: int
     email: str
     name: str
+    venmo_handle: str | None = None
+    paypal_handle: str | None = None
+    cashapp_cashtag: str | None = None
+
+
+class ProfileUpdate(BaseModel):
+    name: str | None = None
+    venmo_handle: str | None = None
+    paypal_handle: str | None = None
+    cashapp_cashtag: str | None = None
 
 
 # --- groups ---
@@ -41,6 +51,9 @@ class MemberOut(BaseModel):
     name: str
     email: str
     role: str
+    venmo_handle: str | None = None
+    paypal_handle: str | None = None
+    cashapp_cashtag: str | None = None
 
 
 class InviteCreate(BaseModel):
@@ -137,6 +150,16 @@ class PaymentOut(BaseModel):
     amount: int
     method: str | None
     status: str
+
+
+class RemindRequest(BaseModel):
+    to_user: int  # the debtor being reminded
+    amount: int
+
+
+class RemindResult(BaseModel):
+    emailed: bool
+    notified: bool
 
 
 # --- balances ---

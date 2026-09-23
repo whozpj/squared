@@ -34,6 +34,11 @@ class Settings(BaseSettings):
     enable_reminders: bool = True
     reminder_interval_hours: int = 24
 
+    # Email (optional; free-tier Resend). Empty key = email is skipped gracefully.
+    resend_api_key: str = ""
+    email_from: str = "Squared <onboarding@resend.dev>"
+    app_url: str = "http://localhost:5173"
+
 
     def normalized_database_url(self) -> str:
         """Ensure the psycopg driver is used (Neon/Render give a bare postgresql:// URL)."""

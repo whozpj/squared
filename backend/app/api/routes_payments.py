@@ -6,6 +6,7 @@ balances.updated event to the group.
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -14,8 +15,9 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, require_member
 from app.core.db import get_db
-from app.models import GroupMember, Payment, PaymentStatus, User
-from app.schemas.entities import PaymentCreate, PaymentOut
+from app.models import Group, GroupMember, Notification, Payment, PaymentStatus, User
+from app.schemas.entities import PaymentCreate, PaymentOut, RemindRequest, RemindResult
+from app.services.email import send_email, settle_reminder_html
 from app.services.ws_manager import balances_updated, manager
 
 router = APIRouter(tags=["payments"])
@@ -83,6 +85,46 @@ def confirm_payment(
         db.refresh(payment)
         manager.broadcast(payment.group_id, balances_updated(payment.group_id))
     return _out(payment)
+
+
+@router.post("/groups/{group_id}/settle/remind", response_model=RemindResult)
+def remind(
+    group_id: int,
+    req: RemindRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> RemindResult:
+    """Nudge a debtor: an in-app notification + (if configured) an email."""
+    require_member(db, group_id, user.id)
+    debtor_member = db.scalar(
+        select(GroupMember).where(
+            GroupMember.group_id == group_id, GroupMember.user_id == req.to_user
+        )
+    )
+    if debtor_member is None:
+        raise HTTPException(status_code=422, detail="that person isn't in this group")
+    debtor = db.get(User, req.to_user)
+    group = db.get(Group, group_id)
+
+    payload = {"group_id": group_id, "owed_cents": req.amount, "from_user": user.id}
+    note = Notification(
+        user_id=req.to_user,
+        type="nudge",
+        payload_json=json.dumps(payload),
+        dedup_key=f"nudge:{group_id}:{req.to_user}:{user.id}:{datetime.now(timezone.utc).timestamp()}",
+    )
+    db.add(note)
+    db.commit()
+    manager.broadcast(
+        group_id, {"type": "notification.new", "group_id": group_id, "user_id": req.to_user}
+    )
+
+    emailed = send_email(
+        debtor.email,
+        f"You owe {user.name} ${req.amount / 100:.2f} on Squared",
+        settle_reminder_html(user.name, req.amount, group.name),
+    )
+    return RemindResult(emailed=emailed, notified=True)
 
 
 @router.get("/groups/{group_id}/payments", response_model=list[PaymentOut])
