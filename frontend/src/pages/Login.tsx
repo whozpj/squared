@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Field, Input } from "../components/ui";
+import { WelcomeDemo } from "../components/WelcomeDemo";
 import { useAuth } from "../lib/auth";
 
 export default function Login() {
@@ -32,14 +33,20 @@ export default function Login() {
   return (
     <div style={{ display: "grid", placeItems: "center", minHeight: "100dvh", padding: 16 }}>
       <div style={{ width: "100%", maxWidth: 380 }}>
-        <div className="wordmark" style={{ fontSize: 24, marginBottom: 8, justifyContent: "center" }}>
+        <div className="anim-1">
+          <WelcomeDemo />
+        </div>
+        <div
+          className="wordmark anim-2"
+          style={{ fontSize: 24, marginBottom: 8, justifyContent: "center" }}
+        >
           <span className="glyph" style={{ width: 26, height: 26 }} />
           Squared
         </div>
-        <p className="muted" style={{ textAlign: "center", marginBottom: 28 }}>
+        <p className="muted anim-3" style={{ textAlign: "center", marginBottom: 28 }}>
           Split bills fairly. Settle up in the fewest payments.
         </p>
-        <div className="card">
+        <div className="card anim-4">
           <form onSubmit={submit}>
             <Field label="Email">
               <Input
