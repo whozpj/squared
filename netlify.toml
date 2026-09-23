@@ -1,9 +1,8 @@
-# Deploy the frontend as a static site (Netlify free tier).
-# Set VITE_API_BASE in the Netlify UI (Site settings → Environment) to the backend URL.
+# Netlify reads this from the repo root. Build the frontend and publish its dist.
 [build]
   base = "frontend"
   command = "npm run build"
-  publish = "dist"
+  publish = "dist"   # relative to base -> frontend/dist
 
 # SPA fallback: every route serves index.html so deep links / refresh work.
 [[redirects]]
