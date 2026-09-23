@@ -4,6 +4,9 @@
   command = "npm run build"
   publish = "dist"   # relative to base -> frontend/dist
 
+[build.environment]
+  NODE_VERSION = "20"   # react-router-dom 7 requires Node >= 20
+
 # SPA fallback: every route serves index.html so deep links / refresh work.
 [[redirects]]
   from = "/*"
