@@ -31,55 +31,44 @@ export default function Login() {
   };
 
   return (
-    <div style={{ display: "grid", placeItems: "center", minHeight: "100dvh", padding: 24 }}>
-      <div className="welcome-wrap">
-        <div className="anim-1">
-          <WelcomeShow />
+    <div className="welcome-full">
+      <header className="welcome-top">
+        <div className="wordmark anim-1">
+          <span className="glyph" />
+          Squared
         </div>
-        <div className="welcome-form">
-          <div
-            className="wordmark anim-2"
-            style={{ fontSize: 24, marginBottom: 8, justifyContent: "center" }}
-          >
-            <span className="glyph" style={{ width: 26, height: 26 }} />
-            Squared
-          </div>
-          <p className="muted anim-3" style={{ textAlign: "center", marginBottom: 24 }}>
-            Split bills fairly. Settle up in the fewest payments.
-          </p>
-          <div className="card anim-4">
+        <div className="signin-mini anim-2">
           <form onSubmit={submit}>
+            <div className="signin-mini-title">Sign in</div>
             <Field label="Email">
               <Input
                 type="email"
                 required
-                autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
               />
             </Field>
             <Field label="Name">
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-              />
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
             </Field>
             {err && (
-              <p className="small" style={{ color: "var(--negative)", marginBottom: 12 }}>
+              <p className="small" style={{ color: "var(--negative)", marginBottom: 10 }}>
                 {err}
               </p>
             )}
             <Button variant="primary" block type="submit" loading={busy}>
               Continue
             </Button>
+            <p className="small faint" style={{ textAlign: "center", marginTop: 10 }}>
+              Google sign-in coming soon.
+            </p>
           </form>
-          </div>
-          <p className="small faint" style={{ textAlign: "center", marginTop: 16 }}>
-            Sign in with Google coming soon.
-          </p>
         </div>
+      </header>
+
+      <div className="welcome-center anim-3">
+        <WelcomeShow />
       </div>
     </div>
   );
