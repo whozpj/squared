@@ -373,50 +373,246 @@
   animation: fadeUp 0.5s ease 0.3s both;
 }
 
-.welcome-demo {
-  position: relative;
-  width: 300px;
-  max-width: 100%;
-  height: 150px;
-  margin: 0 auto 20px;
+/* ---- Welcome layout ---- */
+.welcome-wrap {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+  width: 100%;
+  max-width: 980px;
 }
-.hero-layer {
+@media (min-width: 900px) {
+  .welcome-wrap {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
+  }
+}
+.welcome-form {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* ---- Animated hero stage ---- */
+.hero-stage {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+}
+.hero-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* persistent motion */
+.person {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bob 3.4s ease-in-out infinite;
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+.scanline {
+  animation: scan 2.4s ease-in-out infinite;
+}
+@keyframes scan {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  12%,
+  88% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(132px);
+    opacity: 0;
+  }
+}
+
+/* elements revealed per act */
+.g-split,
+.g-tangle,
+.g-settle,
+.person-chip,
+.receipt-check {
+  opacity: 0;
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+.receipt {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 0.5s ease,
+    transform 0.6s ease;
+}
+.split-line {
+  stroke: var(--border-strong);
+  stroke-width: 2;
+  stroke-dasharray: 3 6;
+  fill: none;
+}
+.tangle {
+  stroke: var(--border-strong);
+  stroke-width: 2;
+  fill: none;
+}
+.settle-arrow {
+  stroke: var(--positive);
+  stroke-width: 3.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 240;
+  stroke-dashoffset: 240;
+}
+.settle-pill {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ACT 0 — scan the receipt */
+.hero-stage[data-act="0"] .person {
+  opacity: 0.3;
+}
+.hero-stage[data-act="0"] .receipt-check {
+  opacity: 1;
+  animation: pop 0.4s ease 0.7s both;
+}
+
+/* ACT 1 — split fairly */
+.hero-stage[data-act="1"] .receipt {
+  transform: translateY(-26px) scale(0.72);
+  opacity: 0.92;
+}
+.hero-stage[data-act="1"] .scanline {
+  opacity: 0;
+  animation: none;
+}
+.hero-stage[data-act="1"] .g-split {
+  opacity: 1;
+}
+.hero-stage[data-act="1"] .person-chip {
+  opacity: 1;
+}
+
+/* ACT 2 — settle in one */
+.hero-stage[data-act="2"] .receipt {
+  opacity: 0;
+  transform: translateY(-40px) scale(0.6);
+}
+.hero-stage[data-act="2"] .scanline {
+  opacity: 0;
+  animation: none;
+}
+.hero-stage[data-act="2"] .g-settle {
+  opacity: 1;
+}
+.hero-stage[data-act="2"] .settle-arrow {
+  animation: draw 0.85s ease 0.1s forwards;
+}
+.hero-stage[data-act="2"] .settle-pill {
+  animation: pop 0.5s ease 0.35s both;
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* caption + progress dots */
+.hero-caption {
+  position: relative;
+  height: 52px;
+  margin-top: 12px;
+  text-align: center;
+}
+.hero-cap {
   position: absolute;
   inset: 0;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+.hero-cap.on {
+  opacity: 1;
+  transform: none;
+}
+.hero-cap-title {
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+.hero-cap-sub {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 2px;
+}
+.hero-dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 12px;
+}
+.hero-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transition: all 0.3s ease;
+}
+.hero-dot.on {
+  background: var(--ink);
+  width: 20px;
+}
+
+/* ---- Animated "show" hero ---- */
+.show-stage {
   width: 100%;
-  height: 100%;
+  max-width: 520px;
+  margin: 0 auto;
 }
-@keyframes heroA {
-  0%,
-  38% {
-    opacity: 1;
-  }
-  50%,
-  88% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.show-svg {
+  width: 100%;
+  height: auto;
+  display: block;
 }
-@keyframes heroB {
-  0%,
-  38% {
-    opacity: 0;
-  }
-  50%,
-  88% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.show-caption {
+  position: relative;
+  min-height: 58px;
+  margin-top: 8px;
+  text-align: center;
 }
-.hero-a {
-  animation: heroA 6s ease-in-out infinite;
+.show-cap-title {
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: -0.02em;
 }
-.hero-b {
-  animation: heroB 6s ease-in-out infinite;
+.show-cap-sub {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 3px;
 }
 
 /* Settle-up transfer row: wrap the amount/actions below on narrow screens. */

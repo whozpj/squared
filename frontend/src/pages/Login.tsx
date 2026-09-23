@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Field, Input } from "../components/ui";
-import { WelcomeDemo } from "../components/WelcomeDemo";
+import { WelcomeShow } from "../components/WelcomeShow";
 import { useAuth } from "../lib/auth";
 
 export default function Login() {
@@ -31,22 +31,23 @@ export default function Login() {
   };
 
   return (
-    <div style={{ display: "grid", placeItems: "center", minHeight: "100dvh", padding: 16 }}>
-      <div style={{ width: "100%", maxWidth: 380 }}>
+    <div style={{ display: "grid", placeItems: "center", minHeight: "100dvh", padding: 24 }}>
+      <div className="welcome-wrap">
         <div className="anim-1">
-          <WelcomeDemo />
+          <WelcomeShow />
         </div>
-        <div
-          className="wordmark anim-2"
-          style={{ fontSize: 24, marginBottom: 8, justifyContent: "center" }}
-        >
-          <span className="glyph" style={{ width: 26, height: 26 }} />
-          Squared
-        </div>
-        <p className="muted anim-3" style={{ textAlign: "center", marginBottom: 28 }}>
-          Split bills fairly. Settle up in the fewest payments.
-        </p>
-        <div className="card anim-4">
+        <div className="welcome-form">
+          <div
+            className="wordmark anim-2"
+            style={{ fontSize: 24, marginBottom: 8, justifyContent: "center" }}
+          >
+            <span className="glyph" style={{ width: 26, height: 26 }} />
+            Squared
+          </div>
+          <p className="muted anim-3" style={{ textAlign: "center", marginBottom: 24 }}>
+            Split bills fairly. Settle up in the fewest payments.
+          </p>
+          <div className="card anim-4">
           <form onSubmit={submit}>
             <Field label="Email">
               <Input
@@ -74,10 +75,11 @@ export default function Login() {
               Continue
             </Button>
           </form>
+          </div>
+          <p className="small faint" style={{ textAlign: "center", marginTop: 16 }}>
+            Sign in with Google coming soon.
+          </p>
         </div>
-        <p className="small faint" style={{ textAlign: "center", marginTop: 16 }}>
-          Sign in with Google coming soon.
-        </p>
       </div>
     </div>
   );
