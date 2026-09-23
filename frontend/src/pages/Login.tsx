@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Field, Input } from "../components/ui";
 import { WelcomeShow } from "../components/WelcomeShow";
@@ -11,10 +11,20 @@ export default function Login() {
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user) nav("/");
   }, [user, nav]);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,42 +42,53 @@ export default function Login() {
 
   return (
     <div className="welcome-full">
-      <header className="welcome-top">
-        <div className="wordmark anim-1">
-          <span className="glyph" />
-          Squared
-        </div>
-        <div className="signin-mini anim-2">
-          <form onSubmit={submit}>
-            <div className="signin-mini-title">Sign in</div>
-            <Field label="Email">
-              <Input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-              />
-            </Field>
-            <Field label="Name">
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
-            </Field>
-            {err && (
-              <p className="small" style={{ color: "var(--negative)", marginBottom: 10 }}>
-                {err}
-              </p>
-            )}
-            <Button variant="primary" block type="submit" loading={busy}>
-              Continue
+      <header className="topbar">
+        <div className="topbar-inner">
+          <div className="wordmark">
+            <span className="glyph" />
+            Squared
+          </div>
+          <div className="spacer" />
+          <div ref={menuRef} style={{ position: "relative" }}>
+            <Button variant="primary" size="sm" onClick={() => setOpen((o) => !o)}>
+              Sign in
             </Button>
-            <p className="small faint" style={{ textAlign: "center", marginTop: 10 }}>
-              Google sign-in coming soon.
-            </p>
-          </form>
+            {open && (
+              <div className="panel signin-panel">
+                <form onSubmit={submit}>
+                  <div className="signin-mini-title">Welcome</div>
+                  <Field label="Email">
+                    <Input
+                      type="email"
+                      required
+                      autoFocus
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                    />
+                  </Field>
+                  <Field label="Name">
+                    <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+                  </Field>
+                  {err && (
+                    <p className="small" style={{ color: "var(--negative)", marginBottom: 10 }}>
+                      {err}
+                    </p>
+                  )}
+                  <Button variant="primary" block type="submit" loading={busy}>
+                    Continue
+                  </Button>
+                  <p className="small faint" style={{ textAlign: "center", marginTop: 10 }}>
+                    Google sign-in coming soon.
+                  </p>
+                </form>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
-      <div className="welcome-center anim-3">
+      <div className="welcome-center">
         <WelcomeShow />
       </div>
     </div>

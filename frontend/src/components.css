@@ -373,62 +373,31 @@
   animation: fadeUp 0.5s ease 0.3s both;
 }
 
-/* ---- Full-screen welcome ---- */
+/* ---- Full-screen welcome (site header bar + full-bleed show) ---- */
 .welcome-full {
-  position: relative;
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.welcome-center {
+  flex: 1;
   display: grid;
   place-items: center;
   padding: 24px;
   overflow: hidden;
 }
-.welcome-top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px 24px;
+.welcome-center > * {
+  width: 100%;
+  max-width: min(90vw, 780px);
 }
-.welcome-top .wordmark {
-  font-size: 22px;
-}
-.signin-mini {
-  width: 300px;
-  max-width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  box-shadow: var(--shadow-md);
+.signin-panel {
+  width: min(320px, calc(100vw - 32px));
   padding: 18px;
 }
 .signin-mini-title {
   font-weight: 700;
   font-size: 16px;
   margin-bottom: 12px;
-}
-/* The animation is the whole screen. */
-.welcome-center {
-  width: 100%;
-  max-width: min(88vw, 760px);
-}
-@media (max-width: 720px) {
-  .welcome-top {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .signin-mini {
-    width: 100%;
-  }
-  /* push the show below the stacked header on small screens */
-  .welcome-center {
-    margin-top: 220px;
-    max-width: 96vw;
-  }
 }
 
 /* ---- Animated hero stage ---- */
