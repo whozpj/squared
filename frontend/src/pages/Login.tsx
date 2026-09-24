@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Field, Input } from "../components/ui";
-import { WelcomeShow } from "../components/WelcomeShow";
+import { FloatingSquares, WelcomeShow } from "../components/WelcomeShow";
 import { useAuth } from "../lib/auth";
 
 export default function Login() {
@@ -42,6 +42,7 @@ export default function Login() {
 
   return (
     <div className="welcome-full">
+      <FloatingSquares />
       <header className="topbar">
         <div className="topbar-inner">
           <div className="wordmark">
