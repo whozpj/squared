@@ -1,3 +1,5 @@
+[Squared - Check it out!](https://squared-ocr.netlify.app/login)
+
 # Squared
 
 Split bills the fair way. Snap a receipt, let Squared read the line items, assign
